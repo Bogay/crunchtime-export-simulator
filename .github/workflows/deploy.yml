@@ -1,0 +1,38 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  export-web:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.6
+
+      - name: Export Web
+        run: |
+          mkdir -p dist
+          godot --headless --export-release "Web" dist/index.html
+
+      - name: Add COI Service Worker
+        run: |
+          # Godot 4 Web exports require SharedArrayBuffer, which needs specific COOP/COEP headers.
+          # GitHub Pages doesn't support setting these headers directly, so we use a service worker workaround.
+          curl -L https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js -o dist/coi-serviceworker.js
+          # Inject the script into index.html
+          sed -i 's/<script/<script src="coi-serviceworker.js"><\/script><script/' dist/index.html
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist
