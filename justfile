@@ -1,6 +1,8 @@
 # Godot Project Justfile
 
-godot := "godot"
+set shell := ["bash", "-c"]
+
+godot := "flatpak run org.godotengine.Godot"
 dist_dir := "dist"
 
 # Default action: run the game
@@ -20,15 +22,15 @@ test:
 
 # Lint scripts and tests
 lint:
-    gdscript-formatter lint scripts/ tests/
+    gdscript-formatter lint $(find scripts/ tests/ -name "*.gd")
 
 # Format scripts and tests
 format:
-    gdscript-formatter scripts/ tests/
+    gdscript-formatter $(find scripts/ tests/ -name "*.gd")
 
 # Format check (useful for CI)
 format-check:
-    gdscript-formatter --check scripts/ tests/
+    gdscript-formatter --check $(find scripts/ tests/ -name "*.gd")
 
 # Export the game for Web
 build: clean

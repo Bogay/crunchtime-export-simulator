@@ -11,15 +11,15 @@ jobs:
 
       - name: Install GDQuest Formatter
         run: |
-          curl -L https://github.com/GDQuest/GDScript-formatter/releases/download/v0.1.0/gdscript-formatter-linux -o gdscript-formatter
+          curl -L https://github.com/GDQuest/GDScript-formatter/releases/download/v0.18.2/gdscript-formatter-linux -o gdscript-formatter
           chmod +x gdscript-formatter
           sudo mv gdscript-formatter /usr/local/bin/
 
       - name: GDScript Format Check
-        run: gdscript-formatter --check scripts/ tests/
+        run: gdscript-formatter --check scripts/**/*.gd tests/**/*.gd
 
       - name: GDScript Lint
-        run: gdscript-formatter lint scripts/ tests/
+        run: gdscript-formatter lint scripts/**/*.gd tests/**/*.gd
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2

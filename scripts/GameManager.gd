@@ -12,7 +12,7 @@ var auto_mode_unlocked: bool = false
 var upgrade_levels = {
 	"assets": 0,
 	"energy": 0,
-	"tests": 0
+	"tests": 0,
 }
 
 # Base Costs
@@ -20,7 +20,7 @@ const BASE_COSTS = {
 	"assets": 10,
 	"energy": 25,
 	"tests": 50,
-	"auto": 300
+	"auto": 300,
 }
 
 # Signal for UI updates
@@ -32,14 +32,16 @@ var error_messages = [
 	"Error: No Main Scene Defined",
 	"Export Failed: WebGL memory out of bounds",
 	"Error: Forgot to check SharedArrayBuffer in Export Presets",
-	"Crash: Null instance on line 42"
+	"Crash: Null instance on line 42",
 ]
+
 
 func calculate_upgrade_cost(upgrade_id: String) -> int:
 	if upgrade_id == "auto":
 		return BASE_COSTS["auto"]
 	var level = upgrade_levels[upgrade_id]
 	return int(BASE_COSTS[upgrade_id] * pow(1.5, level))
+
 
 func start_export():
 	if is_exporting:
@@ -48,6 +50,7 @@ func start_export():
 	emit_signal("export_started")
 	emit_signal("state_changed")
 
+
 func finish_export():
 	var success = randf() > fail_chance
 	var error_msg = ""
@@ -55,10 +58,11 @@ func finish_export():
 		player_feedback += feedback_per_export
 	else:
 		error_msg = error_messages[randi() % error_messages.size()]
-	
+
 	is_exporting = false
 	emit_signal("export_finished", success, error_msg)
 	emit_signal("state_changed")
+
 
 func upgrade_assets():
 	var cost = calculate_upgrade_cost("assets")
@@ -70,6 +74,7 @@ func upgrade_assets():
 		return true
 	return false
 
+
 func upgrade_energy():
 	var cost = calculate_upgrade_cost("energy")
 	if player_feedback >= cost and export_cooldown > 0.5:
@@ -80,6 +85,7 @@ func upgrade_energy():
 		return true
 	return false
 
+
 func upgrade_tests():
 	var cost = calculate_upgrade_cost("tests")
 	if player_feedback >= cost and fail_chance > 0.05:
@@ -89,6 +95,7 @@ func upgrade_tests():
 		emit_signal("state_changed")
 		return true
 	return false
+
 
 func upgrade_auto():
 	var cost = calculate_upgrade_cost("auto")

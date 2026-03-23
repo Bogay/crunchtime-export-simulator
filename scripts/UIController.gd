@@ -12,52 +12,70 @@ extends Control
 
 var export_timer: float = 0.0
 
+
 func _ready():
 	game_manager.state_changed.connect(_on_state_changed)
 	game_manager.export_started.connect(_on_export_started)
 	game_manager.export_finished.connect(_on_export_finished)
-	
+
 	export_button.pressed.connect(_on_export_pressed)
 	upgrade_assets_button.pressed.connect(_on_upgrade_assets_pressed)
 	upgrade_energy_button.pressed.connect(_on_upgrade_energy_pressed)
 	upgrade_tests_button.pressed.connect(_on_upgrade_tests_pressed)
 	upgrade_auto_button.pressed.connect(_on_upgrade_auto_pressed)
-	
+
 	_on_state_changed()
+
 
 func _process(delta):
 	if game_manager.is_exporting:
 		export_timer += delta
 		progress_bar.value = (export_timer / game_manager.export_cooldown) * 100
-		
+
 		if export_timer >= game_manager.export_cooldown:
 			export_timer = 0.0
 			game_manager.finish_export()
 			if game_manager.auto_mode_unlocked:
 				game_manager.start_export()
 
+
 func _on_state_changed():
 	feedback_label.text = "Player Feedback: %d" % game_manager.player_feedback
-	upgrade_assets_button.text = "Upgrade Assets: %d" % game_manager.calculate_upgrade_cost("assets")
-	upgrade_energy_button.text = "Upgrade Energy: %d" % game_manager.calculate_upgrade_cost("energy")
-	upgrade_tests_button.text = "Upgrade Tests: %d" % game_manager.calculate_upgrade_cost("tests")
-	upgrade_auto_button.text = "Setup CI/CD: %d" % game_manager.calculate_upgrade_cost("auto")
-	
-	upgrade_assets_button.disabled = game_manager.player_feedback < game_manager.calculate_upgrade_cost("assets")
-	upgrade_energy_button.disabled = game_manager.player_feedback < game_manager.calculate_upgrade_cost("energy") or game_manager.export_cooldown <= 0.5
-	upgrade_tests_button.disabled = game_manager.player_feedback < game_manager.calculate_upgrade_cost("tests") or game_manager.fail_chance <= 0.05
-	upgrade_auto_button.disabled = game_manager.player_feedback < game_manager.calculate_upgrade_cost("auto") or game_manager.auto_mode_unlocked
-	
+
+	var assets_cost = game_manager.calculate_upgrade_cost("assets")
+	var energy_cost = game_manager.calculate_upgrade_cost("energy")
+	var tests_cost = game_manager.calculate_upgrade_cost("tests")
+	var auto_cost = game_manager.calculate_upgrade_cost("auto")
+
+	upgrade_assets_button.text = "Upgrade Assets: %d" % assets_cost
+	upgrade_energy_button.text = "Upgrade Energy: %d" % energy_cost
+	upgrade_tests_button.text = "Upgrade Tests: %d" % tests_cost
+	upgrade_auto_button.text = "Setup CI/CD: %d" % auto_cost
+
+	upgrade_assets_button.disabled = game_manager.player_feedback < assets_cost
+	upgrade_energy_button.disabled = (
+		game_manager.player_feedback < energy_cost or game_manager.export_cooldown <= 0.5
+	)
+	upgrade_tests_button.disabled = (
+		game_manager.player_feedback < tests_cost or game_manager.fail_chance <= 0.05
+	)
+	upgrade_auto_button.disabled = (
+		game_manager.player_feedback < auto_cost or game_manager.auto_mode_unlocked
+	)
+
 	if game_manager.auto_mode_unlocked:
 		upgrade_auto_button.text = "CI/CD Running!"
 
+
 func _on_export_pressed():
 	game_manager.start_export()
+
 
 func _on_export_started():
 	export_button.disabled = true
 	error_label.text = ""
 	progress_bar.modulate = Color.WHITE
+
 
 func _on_export_finished(success: bool, error_msg: String):
 	if success:
@@ -69,18 +87,22 @@ func _on_export_finished(success: bool, error_msg: String):
 		# Penalty delay if not in auto mode
 		if not game_manager.auto_mode_unlocked:
 			await get_tree().create_timer(2.0).timeout
-	
+
 	if not game_manager.auto_mode_unlocked:
 		export_button.disabled = false
+
 
 func _on_upgrade_assets_pressed():
 	game_manager.upgrade_assets()
 
+
 func _on_upgrade_energy_pressed():
 	game_manager.upgrade_energy()
 
+
 func _on_upgrade_tests_pressed():
 	game_manager.upgrade_tests()
+
 
 func _on_upgrade_auto_pressed():
 	if game_manager.upgrade_auto():
