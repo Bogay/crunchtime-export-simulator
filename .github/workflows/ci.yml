@@ -11,9 +11,12 @@ jobs:
 
       - name: Install GDQuest Formatter
         run: |
-          curl -L https://github.com/GDQuest/GDScript-formatter/releases/download/v0.18.2/gdscript-formatter-linux -o gdscript-formatter
+          curl -L https://github.com/GDQuest/GDScript-formatter/releases/download/0.18.2/gdscript-formatter-0.18.2-linux-x86_64.zip -o gdscript-formatter.zip
+          unzip gdscript-formatter.zip
+          mv gdscript-formatter-0.18.2-linux-x86_64 gdscript-formatter
           chmod +x gdscript-formatter
           sudo mv gdscript-formatter /usr/local/bin/
+          rm gdscript-formatter.zip
 
       - name: GDScript Format Check
         run: gdscript-formatter --check scripts/**/*.gd tests/**/*.gd
