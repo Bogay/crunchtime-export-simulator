@@ -5,3 +5,4 @@
 /index.wasm
   Content-Encoding: zstd
   Content-Type: application/wasm
+  Cache-Control: no-transform
