@@ -19,10 +19,10 @@ jobs:
           rm gdscript-formatter.zip
 
       - name: GDScript Format Check
-        run: gdscript-formatter --check scripts/**/*.gd tests/**/*.gd
+        run: gdscript-formatter --check $(find scripts/ tests/ -name "*.gd")
 
       - name: GDScript Lint
-        run: gdscript-formatter lint scripts/**/*.gd tests/**/*.gd
+        run: gdscript-formatter lint $(find scripts/ tests/ -name "*.gd")
 
       - name: Setup Godot
         uses: chickensoft-games/setup-godot@v2
