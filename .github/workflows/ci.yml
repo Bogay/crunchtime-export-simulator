@@ -1,0 +1,30 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install GDQuest Formatter
+        run: |
+          curl -L https://github.com/GDQuest/GDScript-formatter/releases/download/v0.1.0/gdscript-formatter-linux -o gdscript-formatter
+          chmod +x gdscript-formatter
+          sudo mv gdscript-formatter /usr/local/bin/
+
+      - name: GDScript Format Check
+        run: gdscript-formatter --check scripts/ tests/
+
+      - name: GDScript Lint
+        run: gdscript-formatter lint scripts/ tests/
+
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v2
+        with:
+          version: 4.6
+          
+      - name: Run GUT Tests
+        run: godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://tests/ -ginclude_subdirs -gexit

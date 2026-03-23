@@ -1,4 +1,4 @@
-# Game Jam Deadline Export Simulator (Godot)
+# CrunchTime: The Export Simulator (Godot)
 
 ## Project Overview
 A satirical clicker game simulating the stress of the final hours of a Game Jam. Players click to "export" projects, earn "Player Feedback" (currency), and buy upgrades to eventually unlock full CI/CD automation.
@@ -8,50 +8,43 @@ A satirical clicker game simulating the stress of the final hours of a Game Jam.
 - **Physics:** Jolt Physics (configured in project settings)
 - **Architecture:** Signal-based Decoupled Logic (GameManager) and UI (UIController).
 - **Target Platform:** Web (configured in `export_presets.cfg`)
+- **CI/CD:** GitHub Actions using `chickensoft-games/setup-godot` and `gdscript-formatter`.
 
 ## Building and Running
 
 ### Prerequisites
-- Godot Engine (Version 4.6 recommended based on `project.godot`).
+- Godot Engine 4.6
+- [just](https://github.com/casey/just) (command runner)
+- [gdscript-formatter](https://github.com/GDQuest/GDScript-formatter) (for linting/formatting)
 
-### Running the Project
-- **Editor:** Open `project.godot` in the Godot Editor and press F5 (or the Play button).
-- **CLI:** `godot --main-scene res://scenes/Main.tscn`
+### Key Commands (via `justfile`)
+- `just run`: Run the game.
+- `just test`: Run all GUT unit tests (headless).
+- `just lint`: Lint scripts and tests using `gdscript-formatter`.
+- `just format`: Auto-format scripts and tests.
+- `just build`: Export the game for Web to the `dist/` directory.
 
-### Exporting (Web)
-To export the game for the web as configured:
-```bash
-mkdir -p dist
-godot --headless --export-release "Web" dist/index.html
-```
-
-### Running Tests
-Currently, the project uses a custom lightweight testing script in `tests/test_game_manager.gd`.
-To run these tests (manual approach):
-1. Instance the `test_game_manager.gd` node in a temporary scene.
-2. Observe the console output for `PASS` or `FAIL` messages.
-
-*TODO: Integrate a formal testing framework like GUT (Godot Unit Test) as suggested in SPEC.md.*
+### Manual CLI
+- **Run:** `godot --main-scene res://scenes/Main.tscn`
+- **Test:** `godot --headless -s res://addons/gut/gut_cmdln.gd -gdir=res://tests/ -ginclude_subdirs -gexit`
 
 ## Project Structure
+- `res://addons/gut/`: The GUT plugin for unit testing.
 - `res://scenes/Main.tscn`: The primary (and only) UI scene.
-- `res://scripts/GameManager.gd`: Handles core game logic, state, and upgrade calculations. Pure logic, independent of UI.
-- `res://scripts/UIController.gd`: Manages UI updates and user input by connecting to signals from `GameManager`.
-- `res://tests/test_game_manager.gd`: Unit tests for `GameManager` logic.
-- `export_presets.cfg`: Configuration for web builds.
-- `SPEC.md`: Original game design and technical specification.
+- `res://scripts/GameManager.gd`: Handles core game logic, state, and upgrade calculations.
+- `res://scripts/UIController.gd`: Manages UI updates and user input.
+- `res://tests/test_game_manager_gut.gd`: GUT unit tests for `GameManager` logic.
+- `res://.github/workflows/ci.yml`: GitHub Actions configuration for automated testing and linting.
+- `justfile`: Task runner configuration.
 
 ## Development Conventions
 
 ### Coding Style
-- **Decoupling:** Keep logic in `GameManager` and UI in `UIController`. `GameManager` should not reference UI nodes directly.
-- **Signals:** Use signals (`state_changed`, `export_started`, `export_finished`) for downward communication (Logic -> UI). Use direct function calls for upward communication (UI -> Logic).
-- **Upgrade Costs:** Use the formula `cost = base_cost * (1.5 ^ level)` for exponential scaling.
+- **Formatter:** Strictly use [GDQuest/GDScript-formatter](https://github.com/GDQuest/GDScript-formatter).
+- **Decoupling:** Keep logic in `GameManager` and UI in `UIController`.
+- **Signals:** Use signals for downward communication (Logic -> UI).
 
 ### Testing Practices
-- Logic changes in `GameManager.gd` should be accompanied by updates to `tests/test_game_manager.gd`.
-- Always verify the "Auto-mode" (CI/CD) logic, as it modifies several core metrics (`fail_chance` to 0, `export_cooldown` to 0.2).
-
-### UI Layout
-- Use `Control` nodes with `VBoxContainer` for layout.
-- The UI should remain responsive and "flat" as per `SPEC.md`.
+- All game logic should be testable without the SceneTree where possible.
+- New features must include GUT tests in the `res://tests/` directory.
+- CI will fail if formatting/linting rules are violated or tests fail.
