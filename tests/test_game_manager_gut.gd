@@ -1,4 +1,4 @@
-extends Node
+extends GutTest
 
 const GameManager = preload("res://scripts/GameManager.gd")
 
@@ -38,15 +38,3 @@ func test_calculate_upgrade_cost():
 	
 	gm.upgrade_levels["assets"] = 1
 	assert_eq(gm.calculate_upgrade_cost("assets"), 15) # 10 * 1.5
-
-func assert_eq(actual, expected, msg = ""):
-	if actual != expected:
-		printerr("FAIL: ", msg, " Expected: ", expected, " Actual: ", actual)
-	else:
-		print("PASS: ", msg)
-
-func assert_true(condition, msg = ""):
-	if not condition:
-		printerr("FAIL: ", msg)
-	else:
-		print("PASS: ", msg)
