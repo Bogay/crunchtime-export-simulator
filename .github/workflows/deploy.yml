@@ -17,8 +17,6 @@ concurrency:
 jobs:
   export-web:
     runs-on: ubuntu-latest
-    outputs:
-      artifact_id: ${{ steps.upload-artifact.outputs.artifact-id }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -35,22 +33,11 @@ jobs:
           mkdir -p dist
           godot --headless --export-release "Web" dist/index.html
 
-      - name: Add COI Service Worker
-        run: |
-          curl -L https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js -o dist/coi-serviceworker.js
-          sed -i 's/<script/<script src="coi-serviceworker.js"><\/script><script/' dist/index.html
-
-      - name: Upload artifact for GitHub Pages
-        id: upload-artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: ./dist
-
-      - name: Upload artifact for internal jobs
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: dist-files
-          path: ./dist/
+          name: game-dist
+          path: dist/
 
   deploy-pages:
     environment:
@@ -59,6 +46,26 @@ jobs:
     runs-on: ubuntu-latest
     needs: export-web
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: game-dist
+          path: dist/
+
+      - name: Setup COI Service Worker
+        run: |
+          # GitHub Pages needs COI Service Worker workaround
+          curl -L https://raw.githubusercontent.com/gzuidhof/coi-serviceworker/master/coi-serviceworker.min.js -o dist/coi-serviceworker.js
+          sed -i 's/<script/<script src="coi-serviceworker.js"><\/script><script/' dist/index.html
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: ./dist
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
@@ -68,17 +75,29 @@ jobs:
     needs: export-web
     steps:
       - name: Checkout
-        uses: actions/checkout@v4 # Need checkout for wrangler.toml
+        uses: actions/checkout@v4
 
       - name: Download artifact
         uses: actions/download-artifact@v4
         with:
-          name: dist-files
-          path: ./dist
+          name: game-dist
+          path: dist/
+
+      - name: Compress and Setup Headers
+        run: |
+          # Install zstd
+          sudo apt-get update && sudo apt-get install -y zstd
+          
+          # Compress WASM in-place for Cloudflare (stays under 25MB)
+          zstd -19 dist/index.wasm -o dist/index.wasm.tmp
+          mv dist/index.wasm.tmp dist/index.wasm
+          
+          # Copy _headers to dist
+          cp _headers dist/_headers
 
       - name: Deploy to Cloudflare Workers
         uses: cloudflare/wrangler-action@v3
         with:
-          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-          command: ${{ github.ref_name == 'main' && 'deploy' || 'versions upload' }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: deploy
