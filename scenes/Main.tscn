@@ -1,0 +1,81 @@
+[gd_scene load_steps=3 format=3 uid="uid://b5obdsv8js07m"]
+
+[ext_resource type="Script" path="res://scripts/UIController.gd" id="1_uic"]
+[ext_resource type="Script" path="res://scripts/GameManager.gd" id="2_gm"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_uic")
+
+[node name="GameManager" type="Node" parent="."]
+script = ExtResource("2_gm")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="."]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -150.0
+offset_right = 200.0
+offset_bottom = 150.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Game Jam Export Simulator 📦"
+horizontal_alignment = 1
+
+[node name="FeedbackLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Player Feedback: 0"
+horizontal_alignment = 1
+
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer"]
+layout_mode = 2
+custom_minimum_size = Vector2(0, 30)
+
+[node name="ExportButton" type="Button" parent="VBoxContainer"]
+layout_mode = 2
+text = "Export Project"
+
+[node name="ErrorLabel" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0, 0, 1)
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="UpgradesTitle" type="Label" parent="VBoxContainer"]
+layout_mode = 2
+text = "Upgrades 🛠️"
+horizontal_alignment = 1
+
+[node name="Upgrades" type="GridContainer" parent="VBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+columns = 2
+
+[node name="UpgradeAssets" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Assets: 10"
+
+[node name="UpgradeEnergy" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Energy: 25"
+
+[node name="UpgradeTests" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Upgrade Tests: 50"
+
+[node name="UpgradeAuto" type="Button" parent="VBoxContainer/Upgrades"]
+layout_mode = 2
+text = "Setup CI/CD: 300"
