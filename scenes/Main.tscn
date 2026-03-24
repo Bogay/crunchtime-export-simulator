@@ -40,6 +40,11 @@ layout_mode = 2
 text = "Player Feedback: 0"
 horizontal_alignment = 1
 
+[node name="FeaturesLabel" type="Label" parent="VBoxContainer" unique_id=1624902125]
+layout_mode = 2
+text = "New Features: 0"
+horizontal_alignment = 1
+
 [node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=848445257]
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2

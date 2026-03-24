@@ -2,6 +2,7 @@ extends Control
 
 @onready var game_manager = $GameManager
 @onready var feedback_label = $VBoxContainer/FeedbackLabel
+@onready var features_label = $VBoxContainer/FeaturesLabel
 @onready var export_button = $VBoxContainer/ExportButton
 @onready var progress_bar = $VBoxContainer/ProgressBar
 @onready var error_label = $VBoxContainer/ErrorLabel
@@ -28,6 +29,8 @@ func _ready():
 
 
 func _process(delta):
+	game_manager.process_features(delta)
+
 	if game_manager.is_exporting:
 		export_timer += delta
 		progress_bar.value = (export_timer / game_manager.export_cooldown) * 100
@@ -41,6 +44,7 @@ func _process(delta):
 
 func _on_state_changed():
 	feedback_label.text = "Player Feedback: %d" % game_manager.player_feedback
+	features_label.text = "New Features: %d" % game_manager.features
 
 	var assets_cost = game_manager.calculate_upgrade_cost("assets")
 	var energy_cost = game_manager.calculate_upgrade_cost("energy")

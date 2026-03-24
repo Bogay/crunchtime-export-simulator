@@ -7,6 +7,10 @@ var fail_chance: float = 0.3
 var feedback_per_export: int = 1
 var is_exporting: bool = false
 var auto_mode_unlocked: bool = false
+var features: int = 0
+var feature_timer: float = 0.0
+var feature_rate: float = 5.0
+var slowdown_factor: float = 1.0
 
 # Upgrade Levels
 var upgrade_levels = {
@@ -55,13 +59,28 @@ func finish_export():
 	var success = randf() > fail_chance
 	var error_msg = ""
 	if success:
-		player_feedback += feedback_per_export
+		player_feedback += feedback_per_export * (1 + features)
+		features = 0
 	else:
 		error_msg = error_messages[randi() % error_messages.size()]
 
 	is_exporting = false
 	emit_signal("export_finished", success, error_msg)
 	emit_signal("state_changed")
+
+
+func add_feature():
+	features += 1
+	emit_signal("state_changed")
+
+
+func process_features(delta: float):
+	feature_timer += delta
+	var effective_rate = feature_rate + (features * slowdown_factor)
+	while feature_timer >= effective_rate:
+		feature_timer -= (feature_rate + (features * slowdown_factor))
+		add_feature()
+		effective_rate = feature_rate + (features * slowdown_factor)
 
 
 func upgrade_assets():
