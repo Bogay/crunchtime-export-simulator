@@ -1,0 +1,15 @@
+[gd_resource type="Theme" load_steps=5 format=3]
+
+[ext_resource type="FontFile" path="res://fonts/NotoSansMono-Regular.ttf" id="1_mono"]
+[ext_resource type="FontFile" path="res://fonts/NotoColorEmoji.ttf" id="2_emoji"]
+
+[sub_resource type="FontVariation" id="FontVariation_default"]
+base_font = ExtResource("1_mono")
+fallbacks = Array[Font]([ExtResource("2_emoji")])
+
+[resource]
+default_font = SubResource("FontVariation_default")
+default_font_size = 18
+Label/fonts/font = SubResource("FontVariation_default")
+Button/fonts/font = SubResource("FontVariation_default")
+ProgressBar/fonts/font = SubResource("FontVariation_default")

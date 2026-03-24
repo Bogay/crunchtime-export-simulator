@@ -1,9 +1,9 @@
-[gd_scene load_steps=3 format=3 uid="uid://b5obdsv8js07m"]
+[gd_scene format=3 uid="uid://b5obdsv8js07m"]
 
-[ext_resource type="Script" path="res://scripts/UIController.gd" id="1_uic"]
-[ext_resource type="Script" path="res://scripts/GameManager.gd" id="2_gm"]
+[ext_resource type="Script" uid="uid://dkaxujgt407dp" path="res://scripts/UIController.gd" id="1_uic"]
+[ext_resource type="Script" uid="uid://dw7cbekjh1m0g" path="res://scripts/GameManager.gd" id="2_gm"]
 
-[node name="Main" type="Control"]
+[node name="Main" type="Control" unique_id=390366587]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -12,10 +12,10 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_uic")
 
-[node name="GameManager" type="Node" parent="."]
+[node name="GameManager" type="Node" parent="." unique_id=1999930011]
 script = ExtResource("2_gm")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="."]
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=1546465091]
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
@@ -30,52 +30,52 @@ grow_horizontal = 2
 grow_vertical = 2
 theme_override_constants/separation = 10
 
-[node name="Title" type="Label" parent="VBoxContainer"]
+[node name="Title" type="Label" parent="VBoxContainer" unique_id=604999779]
 layout_mode = 2
 text = "Game Jam Export Simulator 📦"
 horizontal_alignment = 1
 
-[node name="FeedbackLabel" type="Label" parent="VBoxContainer"]
+[node name="FeedbackLabel" type="Label" parent="VBoxContainer" unique_id=1624902124]
 layout_mode = 2
 text = "Player Feedback: 0"
 horizontal_alignment = 1
 
-[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer"]
-layout_mode = 2
+[node name="ProgressBar" type="ProgressBar" parent="VBoxContainer" unique_id=848445257]
 custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
 
-[node name="ExportButton" type="Button" parent="VBoxContainer"]
+[node name="ExportButton" type="Button" parent="VBoxContainer" unique_id=1397921152]
 layout_mode = 2
 text = "Export Project"
 
-[node name="ErrorLabel" type="Label" parent="VBoxContainer"]
+[node name="ErrorLabel" type="Label" parent="VBoxContainer" unique_id=595585318]
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0, 0, 1)
 horizontal_alignment = 1
 autowrap_mode = 2
 
-[node name="UpgradesTitle" type="Label" parent="VBoxContainer"]
+[node name="UpgradesTitle" type="Label" parent="VBoxContainer" unique_id=1902615568]
 layout_mode = 2
 text = "Upgrades 🛠️"
 horizontal_alignment = 1
 
-[node name="Upgrades" type="GridContainer" parent="VBoxContainer"]
+[node name="Upgrades" type="GridContainer" parent="VBoxContainer" unique_id=986005990]
 layout_mode = 2
 size_flags_horizontal = 4
 columns = 2
 
-[node name="UpgradeAssets" type="Button" parent="VBoxContainer/Upgrades"]
+[node name="UpgradeAssets" type="Button" parent="VBoxContainer/Upgrades" unique_id=693218998]
 layout_mode = 2
 text = "Upgrade Assets: 10"
 
-[node name="UpgradeEnergy" type="Button" parent="VBoxContainer/Upgrades"]
+[node name="UpgradeEnergy" type="Button" parent="VBoxContainer/Upgrades" unique_id=616174905]
 layout_mode = 2
 text = "Upgrade Energy: 25"
 
-[node name="UpgradeTests" type="Button" parent="VBoxContainer/Upgrades"]
+[node name="UpgradeTests" type="Button" parent="VBoxContainer/Upgrades" unique_id=1692122848]
 layout_mode = 2
 text = "Upgrade Tests: 50"
 
-[node name="UpgradeAuto" type="Button" parent="VBoxContainer/Upgrades"]
+[node name="UpgradeAuto" type="Button" parent="VBoxContainer/Upgrades" unique_id=1704296360]
 layout_mode = 2
 text = "Setup CI/CD: 300"
