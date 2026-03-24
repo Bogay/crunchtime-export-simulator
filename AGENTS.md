@@ -44,6 +44,12 @@ A satirical clicker game simulating the stress of the final hours of a Game Jam.
 - **Decoupling:** Keep logic in `GameManager` and UI in `UIController`.
 - **Signals:** Use signals for downward communication (Logic -> UI).
 
+### Mandatory Pre-Commit Checks
+Before committing and pushing any changes, agents **MUST** run the following commands and ensure they pass:
+1. `just format`: To ensure all code follows the style guide.
+2. `just lint`: To verify no linting rules are broken.
+3. `just test`: To ensure all unit tests pass and no regressions are introduced.
+
 ### Testing Practices
 - All game logic should be testable without the SceneTree where possible.
 - New features must include GUT tests in the `res://tests/` directory.
