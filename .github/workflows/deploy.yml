@@ -88,14 +88,14 @@ jobs:
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put godot-game-jam-2026-wasm/index.wasm --file dist/index.wasm --content-type application/wasm
+          command: r2 object put crunchtime-export-simulator/index.wasm --file dist/index.wasm --content-type application/wasm
 
       - name: Upload .pck to R2
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put godot-game-jam-2026-wasm/index.pck --file dist/index.pck --content-type application/octet-stream
+          command: r2 object put crunchtime-export-simulator/index.pck --file dist/index.pck --content-type application/octet-stream
 
       - name: Remove large assets from assets (served via R2)
         run: rm dist/*.wasm dist/*.pck
