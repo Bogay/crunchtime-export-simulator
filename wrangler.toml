@@ -1,5 +1,11 @@
 name = "crunchtime-export-simulator"
+main = "worker.js"
 compatibility_date = "2026-03-23"
 
 [assets]
 directory = "./dist"
+binding = "ASSETS"
+
+[[r2_buckets]]
+binding = "WASM_BUCKET"
+bucket_name = "crunchtime-export-simulator"

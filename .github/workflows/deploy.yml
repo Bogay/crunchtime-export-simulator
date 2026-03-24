@@ -83,15 +83,25 @@ jobs:
           name: game-dist
           path: dist/
 
-      - name: Compress and Setup Headers
+      - name: Upload .wasm to R2
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: r2 object put godot-game-jam-2026-wasm/index.wasm --file dist/index.wasm --content-type application/wasm
+
+      - name: Upload .pck to R2
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          command: r2 object put godot-game-jam-2026-wasm/index.pck --file dist/index.pck --content-type application/octet-stream
+
+      - name: Remove large assets from assets (served via R2)
+        run: rm dist/*.wasm dist/*.pck
+
+      - name: Setup Headers
         run: |
-          # Install zstd
-          sudo apt-get update && sudo apt-get install -y zstd
-          
-          # Compress WASM in-place for Cloudflare (stays under 25MB)
-          zstd -19 dist/index.wasm -o dist/index.wasm.tmp
-          mv dist/index.wasm.tmp dist/index.wasm
-          
           # Copy _headers to dist
           cp _headers dist/_headers
 
