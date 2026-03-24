@@ -3,16 +3,18 @@ name: Deploy to GitHub Pages and Cloudflare
 on:
   push:
     branches: [main]
+  pull_request:
   workflow_dispatch:
 
 permissions:
   contents: read
   pages: write
   id-token: write
+  pull-requests: write
 
 concurrency:
-  group: "pages"
-  cancel-in-progress: false
+  group: "pages-${{ github.ref_name }}"
+  cancel-in-progress: true
 
 jobs:
   export-web:
@@ -40,6 +42,7 @@ jobs:
           path: dist/
 
   deploy-pages:
+    if: github.ref_name == 'main'
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
@@ -83,19 +86,31 @@ jobs:
           name: game-dist
           path: dist/
 
+      - name: Set Branch Slug
+        id: branch
+        run: |
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            SLUG="pr-${{ github.event.pull_request.number }}"
+          else
+            SLUG=$(echo "${{ github.ref_name }}" | sed 's/[^a-zA-Z0-9]/-/g' | tr '[:upper:]' '[:lower:]')
+          fi
+          echo "slug=$SLUG" >> $GITHUB_OUTPUT
+
       - name: Upload .wasm to R2
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put crunchtime-export-simulator/index.wasm --file dist/index.wasm --content-type application/wasm
+          wranglerVersion: 4.77.0
+          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.wasm --file dist/index.wasm --content-type application/wasm
 
       - name: Upload .pck to R2
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: r2 object put crunchtime-export-simulator/index.pck --file dist/index.pck --content-type application/octet-stream
+          wranglerVersion: 4.77.0
+          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.pck --file dist/index.pck --content-type application/octet-stream
 
       - name: Remove large assets from assets (served via R2)
         run: rm dist/*.wasm dist/*.pck
@@ -105,9 +120,33 @@ jobs:
           # Copy _headers to dist
           cp _headers dist/_headers
 
-      - name: Deploy to Cloudflare Workers
+      - name: Deploy to Cloudflare Workers (Main)
+        if: github.ref_name == 'main'
         uses: cloudflare/wrangler-action@v3
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
-          command: deploy
+          wranglerVersion: 4.77.0
+          command: deploy --var WASM_PREFIX:main
+
+      - name: Deploy to Cloudflare Workers (Preview)
+        if: github.ref_name != 'main'
+        id: deploy_preview
+        uses: cloudflare/wrangler-action@v3
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          wranglerVersion: 4.77.0
+          command: versions upload --preview-alias ${{ steps.branch.outputs.slug }} --var WASM_PREFIX:${{ steps.branch.outputs.slug }}
+
+      - name: Comment preview URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `🚀 Preview: ${{ steps.deploy_preview.outputs.deployment-url }}`
+            })

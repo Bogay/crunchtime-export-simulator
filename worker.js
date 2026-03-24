@@ -2,7 +2,8 @@ export default {
   async fetch(request, env) {
     const url = new URL(request.url);
     if (url.pathname.endsWith('.wasm') || url.pathname.endsWith('.pck')) {
-      const key = url.pathname.slice(1); // e.g. "index.wasm"
+      const prefix = env.WASM_PREFIX ? `${env.WASM_PREFIX}/` : "";
+      const key = prefix + url.pathname.slice(1);
       const object = await env.WASM_BUCKET.get(key);
       if (!object) return new Response('Not found', { status: 404 });
 
