@@ -102,7 +102,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: 4.77.0
-          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.wasm --file dist/index.wasm --content-type application/wasm
+          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.wasm --file dist/index.wasm --content-type application/wasm --remote
 
       - name: Upload .pck to R2
         uses: cloudflare/wrangler-action@v3
@@ -110,7 +110,7 @@ jobs:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           wranglerVersion: 4.77.0
-          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.pck --file dist/index.pck --content-type application/octet-stream
+          command: r2 object put crunchtime-export-simulator/${{ steps.branch.outputs.slug }}/index.pck --file dist/index.pck --content-type application/octet-stream --remote
 
       - name: Remove large assets from assets (served via R2)
         run: rm dist/*.wasm dist/*.pck
