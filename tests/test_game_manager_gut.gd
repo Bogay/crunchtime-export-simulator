@@ -57,7 +57,7 @@ func test_features_and_feedback():
 	gm.fail_chance = -1.0 # Force success
 	gm.finish_export()
 
-	assert_gt(gm.player_feedback, initial_feedback, "Feedback should increase after export with features")
+	assert_gt(gm.player_feedback, initial_feedback, "Feedback should increase with features")
 	assert_eq(gm.features, 0, "Features should reset after successful export")
 
 
@@ -96,7 +96,7 @@ func test_feature_generation_slowdown():
 	# Second feature should take longer than 1s
 	gm.feature_timer = 0.0
 	gm.process_features(1.1)
-	assert_eq(gm.features, 1, "Second feature should NOT have generated yet at 1.1s due to slowdown")
+	assert_eq(gm.features, 1, "Second feature should NOT have generated yet at 1.1s")
 
 	gm.process_features(1.0) # 2.1s total for second feature
 	assert_eq(gm.features, 2, "Second feature should generate after more time")
